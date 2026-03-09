@@ -3,99 +3,126 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Paper Feed Journal</title>
+    <title>李东 | 简历</title>
     <meta
       name="description"
-      content="米色极简打印机风格博客，像一台安静吐纸的机器，持续输出生活与设计笔记。"
+      content="李东的中文简历页面，采用米色极简打印机风格展示个人简介、经历、技能与联系方式。"
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
     <div class="page-shell">
       <header class="hero">
-        <div class="printer" aria-label="博客首页打印机界面">
+        <div class="window-shell">
+          <div class="printer" aria-label="博客首页打印机界面">
           <section class="printer-top">
-            <div class="brand">
-              <p class="eyebrow">Independent Blog</p>
-              <h1>Paper Feed Journal</h1>
-            </div>
-
             <div class="control-panel">
-              <div class="panel-screen">
-                <span class="screen-led"></span>
-                <p>READY TO PRINT</p>
+              <div class="identity-row">
+                <div class="identity-badge">
+                  <span class="identity-dot"></span>
+                </div>
+                <div class="identity-copy">
+                  <p class="identity-name">李东 Seven Lee</p>
+                  <p class="identity-role">产品设计 / 前端体验 / 品牌表达</p>
+                </div>
               </div>
 
-              <nav class="menu" aria-label="主导航">
-                <button class="menu-button is-active" data-target="about">About</button>
-                <button class="menu-button" data-target="posts">Posts</button>
-                <button class="menu-button" data-target="notes">Notes</button>
-                <button class="menu-button" data-target="contact">Contact</button>
-              </nav>
+              <div class="control-row">
+                <div class="panel-screen" aria-label="打印机状态">
+                  <span class="screen-led"></span>
+                  <p>就绪</p>
+                </div>
+
+                <nav class="menu" aria-label="主导航">
+                  <button class="menu-button is-active" data-page="about">简介</button>
+                  <button class="menu-button" data-page="posts">经历</button>
+                  <button class="menu-button" data-page="notes">技能</button>
+                  <button class="menu-button" data-page="contact">联系</button>
+                </nav>
+
+                <button class="theme-toggle" id="theme-toggle" type="button" aria-label="切换日夜模式">
+                  <span class="theme-toggle-track">
+                    <span class="theme-toggle-thumb"></span>
+                  </span>
+                  <span class="theme-toggle-label">白天</span>
+                </button>
+              </div>
             </div>
           </section>
 
           <section class="paper-output">
-            <article class="paper-sheet intro-sheet section-target" id="about">
-              <p class="sheet-tag">Print 01 / Intro</p>
-              <h2>把网站做成一台慢速运转的打印机。</h2>
-              <p class="lead">
-                菜单藏在机器面板里，内容从出纸口缓慢出现。这里记录设计、城市观察、以及那些值得留在纸上的短想法。
-              </p>
-              <div class="intro-meta">
-                <span>Issue 2026</span>
-                <span>Beige Minimal</span>
-                <span>Built for GitHub Pages</span>
-              </div>
-            </article>
+            <div class="paper-stage" id="paper-stage">
+              <article class="paper-sheet page-screen intro-sheet is-current" id="about" data-page="about">
+                <p class="sheet-tag">Resume 01 / Profile</p>
+                <h2>李东 Seven Lee</h2>
+                <p class="lead">
+                  聚焦产品体验、前端实现与品牌表达的复合型从业者。擅长把抽象需求梳理成清晰结构，再落成可上线、可维护、可被用户感知的产品界面。
+                </p>
+                <div class="intro-meta">
+                  <span>产品设计</span>
+                  <span>前端体验</span>
+                  <span>品牌表达</span>
+                </div>
+                <div class="resume-actions">
+                  <a
+                    class="resume-download"
+                    href="./output/pdf/lidong-resume.pdf"
+                    download="lidong-resume.pdf"
+                  >
+                    下载 PDF 简历
+                  </a>
+                </div>
+              </article>
 
-            <section class="paper-sheet posts-sheet section-target" id="posts">
-              <div class="sheet-head">
-                <p class="sheet-tag">Print 02 / Selected Posts</p>
-                <h2>最近输出</h2>
-              </div>
-              <div class="post-list" id="post-list"></div>
-            </section>
+              <section class="paper-sheet page-screen posts-sheet" id="posts" data-page="posts" hidden>
+                <div class="sheet-head">
+                  <p class="sheet-tag">Resume 02 / Experience</p>
+                  <h2>工作经历</h2>
+                </div>
+                <div class="post-list" id="post-list"></div>
+              </section>
 
-            <section class="paper-sheet notes-sheet section-target" id="notes">
-              <div class="sheet-head">
-                <p class="sheet-tag">Print 03 / Notes</p>
-                <h2>边角碎纸</h2>
-              </div>
-              <div class="note-grid">
-                <article>
-                  <p class="note-index">01</p>
-                  <h3>打印感排版</h3>
-                  <p>使用宽边距、规则分隔线和等宽细节，让屏幕保留纸张秩序感。</p>
-                </article>
-                <article>
-                  <p class="note-index">02</p>
-                  <h3>低对比米色</h3>
-                  <p>背景保持温暖，正文不过度发白，像旧纸而不是纯白画板。</p>
-                </article>
-                <article>
-                  <p class="note-index">03</p>
-                  <h3>动作克制</h3>
-                  <p>只有轻微出纸动效和按钮回弹，不做花哨悬浮，保留机械节奏。</p>
-                </article>
-              </div>
-            </section>
+              <section class="paper-sheet page-screen notes-sheet" id="notes" data-page="notes" hidden>
+                <div class="sheet-head">
+                  <p class="sheet-tag">Resume 03 / Skills</p>
+                  <h2>能力概览</h2>
+                </div>
+                <div class="note-grid">
+                  <article>
+                    <p class="note-index">01</p>
+                    <h3>产品规划</h3>
+                    <p>能从业务目标、用户路径和页面结构三个层面整理需求，快速形成信息架构与关键流程。</p>
+                  </article>
+                  <article>
+                    <p class="note-index">02</p>
+                    <h3>视觉与交互</h3>
+                    <p>擅长建立界面节奏、组件层次与交互反馈，让页面既有辨识度，也具备可用性与一致性。</p>
+                  </article>
+                  <article>
+                    <p class="note-index">03</p>
+                    <h3>前端落地</h3>
+                    <p>可独立完成静态站点、展示型页面和中小型交互界面的实现，并兼顾响应式与部署流程。</p>
+                  </article>
+                </div>
+              </section>
 
-            <section class="paper-sheet contact-sheet section-target" id="contact">
-              <div class="sheet-head">
-                <p class="sheet-tag">Print 04 / Contact</p>
-                <h2>联系与订阅</h2>
-              </div>
-              <p class="contact-copy">
-                如果你也喜欢安静、清晰、像纸张一样可折叠的界面，可以通过下面方式找到我。
-              </p>
-              <div class="contact-list">
-                <a href="mailto:hello@paperfeed.blog">hello@paperfeed.blog</a>
-                <a href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a>
-                <a href="https://www.instagram.com/" target="_blank" rel="noreferrer">Instagram</a>
-              </div>
-            </section>
+              <section class="paper-sheet page-screen contact-sheet" id="contact" data-page="contact" hidden>
+                <div class="sheet-head">
+                  <p class="sheet-tag">Resume 04 / Contact</p>
+                  <h2>联系信息</h2>
+                </div>
+                <p class="contact-copy">
+                  如需沟通合作、岗位机会或项目交流，可通过以下方式联系我。
+                </p>
+                <div class="contact-list">
+                  <a href="https://github.com/lidongsevenlee" target="_blank" rel="noreferrer">GitHub</a>
+                  <a href="https://lidongsevenlee.github.io" target="_blank" rel="noreferrer">个人主页</a>
+                  <a href="mailto:hello@sevenlee.me">hello@sevenlee.me</a>
+                </div>
+              </section>
+            </div>
           </section>
+          </div>
         </div>
       </header>
     </div>
