@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Paper Feed Journal</title>
+    <meta
+      name="description"
+      content="米色极简打印机风格博客，像一台安静吐纸的机器，持续输出生活与设计笔记。"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="hero">
+        <div class="printer" aria-label="博客首页打印机界面">
+          <section class="printer-top">
+            <div class="brand">
+              <p class="eyebrow">Independent Blog</p>
+              <h1>Paper Feed Journal</h1>
+            </div>
+
+            <div class="control-panel">
+              <div class="panel-screen">
+                <span class="screen-led"></span>
+                <p>READY TO PRINT</p>
+              </div>
+
+              <nav class="menu" aria-label="主导航">
+                <button class="menu-button is-active" data-target="about">About</button>
+                <button class="menu-button" data-target="posts">Posts</button>
+                <button class="menu-button" data-target="notes">Notes</button>
+                <button class="menu-button" data-target="contact">Contact</button>
+              </nav>
+            </div>
+          </section>
+
+          <section class="paper-output">
+            <article class="paper-sheet intro-sheet section-target" id="about">
+              <p class="sheet-tag">Print 01 / Intro</p>
+              <h2>把网站做成一台慢速运转的打印机。</h2>
+              <p class="lead">
+                菜单藏在机器面板里，内容从出纸口缓慢出现。这里记录设计、城市观察、以及那些值得留在纸上的短想法。
+              </p>
+              <div class="intro-meta">
+                <span>Issue 2026</span>
+                <span>Beige Minimal</span>
+                <span>Built for GitHub Pages</span>
+              </div>
+            </article>
+
+            <section class="paper-sheet posts-sheet section-target" id="posts">
+              <div class="sheet-head">
+                <p class="sheet-tag">Print 02 / Selected Posts</p>
+                <h2>最近输出</h2>
+              </div>
+              <div class="post-list" id="post-list"></div>
+            </section>
+
+            <section class="paper-sheet notes-sheet section-target" id="notes">
+              <div class="sheet-head">
+                <p class="sheet-tag">Print 03 / Notes</p>
+                <h2>边角碎纸</h2>
+              </div>
+              <div class="note-grid">
+                <article>
+                  <p class="note-index">01</p>
+                  <h3>打印感排版</h3>
+                  <p>使用宽边距、规则分隔线和等宽细节，让屏幕保留纸张秩序感。</p>
+                </article>
+                <article>
+                  <p class="note-index">02</p>
+                  <h3>低对比米色</h3>
+                  <p>背景保持温暖，正文不过度发白，像旧纸而不是纯白画板。</p>
+                </article>
+                <article>
+                  <p class="note-index">03</p>
+                  <h3>动作克制</h3>
+                  <p>只有轻微出纸动效和按钮回弹，不做花哨悬浮，保留机械节奏。</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="paper-sheet contact-sheet section-target" id="contact">
+              <div class="sheet-head">
+                <p class="sheet-tag">Print 04 / Contact</p>
+                <h2>联系与订阅</h2>
+              </div>
+              <p class="contact-copy">
+                如果你也喜欢安静、清晰、像纸张一样可折叠的界面，可以通过下面方式找到我。
+              </p>
+              <div class="contact-list">
+                <a href="mailto:hello@paperfeed.blog">hello@paperfeed.blog</a>
+                <a href="https://github.com/" target="_blank" rel="noreferrer">GitHub</a>
+                <a href="https://www.instagram.com/" target="_blank" rel="noreferrer">Instagram</a>
+              </div>
+            </section>
+          </section>
+        </div>
+      </header>
+    </div>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
