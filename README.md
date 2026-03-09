@@ -1,21 +1,36 @@
-# Paper Feed Journal
+# 李东简历站点
 
-一个静态博客网站，视觉方向是米色背景和简约打印机风格：菜单在“机器”面板上，正文像打印纸一样从出纸口滑出。
+一个静态中文简历网站，采用米色拟物打印机风格展示个人简介、工作经历、技能概览和联系方式，并提供 PDF 简历下载。
+
+## 当前内容
+
+- 单页简历界面，分页切换动画模拟纸张出列
+- 白天 / 夜间模式切换
+- 在线 PDF 下载文件：`output/pdf/lidong-resume.pdf`
+- GitHub Pages 自动部署
 
 ## 本地预览
 
-直接打开 `index.html`，或者在项目目录运行：
+在项目目录运行：
 
 ```bash
 python3 -m http.server 8000
 ```
 
-然后访问 `http://localhost:8000`。
+然后访问 [http://localhost:8000](http://localhost:8000)。
 
-## 部署到 GitHub Pages
+## 项目结构
 
-1. 把仓库推送到 GitHub。
-2. 在仓库 `Settings -> Pages` 里将 `Source` 设置为 `GitHub Actions`。
-3. 推送到 `main` 分支后，工作流会自动发布站点。
+- `index.html`: 页面结构
+- `styles.css`: 视觉样式与打印样式
+- `script.js`: 页面切换与主题切换逻辑
+- `output/pdf/lidong-resume.pdf`: 当前导出的 PDF 简历
+- `.github/workflows/deploy.yml`: GitHub Pages 部署工作流
 
-如果这是你的个人主页仓库，仓库名应为 `<your-github-username>.github.io`。
+## 部署
+
+当前仓库已使用 GitHub Pages 发布，仓库地址为：
+
+`git@github.com:lidongsevenlee/lidongsevenlee.github.io.git`
+
+推送到 `main` 分支后会自动触发部署。
