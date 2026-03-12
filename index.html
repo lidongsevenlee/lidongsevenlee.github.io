@@ -3,128 +3,206 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>李东 | 简历</title>
+    <title>Seven Lee | 简历</title>
     <meta
       name="description"
-      content="李东的中文简历页面，采用米色极简打印机风格展示个人简介、经历、技能与联系方式。"
+      content="Seven Lee 的中文简历页面，采用现代作品集式信息面板展示个人简介、经历、技能与联系方式，并提供 PDF 下载。"
     />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <div class="page-shell">
-      <header class="hero">
-        <div class="window-shell">
-          <div class="printer" aria-label="博客首页打印机界面">
-          <section class="printer-top">
-            <div class="control-panel">
-              <div class="identity-row">
-                <div class="identity-badge">
-                  <span class="identity-dot"></span>
-                </div>
-                <div class="identity-copy">
-                  <p class="identity-name">李东 Seven Lee</p>
-                  <p class="identity-role">产品设计 / 前端体验 / 品牌表达</p>
-                </div>
-              </div>
-
-              <div class="control-row">
-                <div class="panel-screen" aria-label="打印机状态">
-                  <span class="screen-led"></span>
-                  <p>就绪</p>
-                </div>
-
-                <nav class="menu" aria-label="主导航">
-                  <button class="menu-button is-active" data-page="about">简介</button>
-                  <button class="menu-button" data-page="posts">经历</button>
-                  <button class="menu-button" data-page="notes">技能</button>
-                  <button class="menu-button" data-page="contact">联系</button>
-                </nav>
-
-                <button class="theme-toggle" id="theme-toggle" type="button" aria-label="切换日夜模式">
-                  <span class="theme-toggle-track">
-                    <span class="theme-toggle-thumb"></span>
-                  </span>
-                  <span class="theme-toggle-label">白天</span>
-                </button>
-              </div>
-            </div>
-          </section>
-
-          <section class="paper-output">
-            <div class="paper-stage" id="paper-stage">
-              <article class="paper-sheet page-screen intro-sheet is-current" id="about" data-page="about">
-                <p class="sheet-tag">Resume 01 / Profile</p>
-                <h2>李东 Seven Lee</h2>
-                <p class="lead">
-                  聚焦产品体验、前端实现与品牌表达的复合型从业者。擅长把抽象需求梳理成清晰结构，再落成可上线、可维护、可被用户感知的产品界面。
-                </p>
-                <div class="intro-meta">
-                  <span>产品设计</span>
-                  <span>前端体验</span>
-                  <span>品牌表达</span>
-                </div>
-                <div class="resume-actions">
-                  <a
-                    class="resume-download"
-                    href="./output/pdf/lidong-resume.pdf"
-                    download="lidong-resume.pdf"
-                  >
-                    下载 PDF 简历
-                  </a>
-                </div>
-              </article>
-
-              <section class="paper-sheet page-screen posts-sheet" id="posts" data-page="posts" hidden>
-                <div class="sheet-head">
-                  <p class="sheet-tag">Resume 02 / Experience</p>
-                  <h2>工作经历</h2>
-                </div>
-                <div class="post-list" id="post-list"></div>
-              </section>
-
-              <section class="paper-sheet page-screen notes-sheet" id="notes" data-page="notes" hidden>
-                <div class="sheet-head">
-                  <p class="sheet-tag">Resume 03 / Skills</p>
-                  <h2>能力概览</h2>
-                </div>
-                <div class="note-grid">
-                  <article>
-                    <p class="note-index">01</p>
-                    <h3>产品规划</h3>
-                    <p>能从业务目标、用户路径和页面结构三个层面整理需求，快速形成信息架构与关键流程。</p>
-                  </article>
-                  <article>
-                    <p class="note-index">02</p>
-                    <h3>视觉与交互</h3>
-                    <p>擅长建立界面节奏、组件层次与交互反馈，让页面既有辨识度，也具备可用性与一致性。</p>
-                  </article>
-                  <article>
-                    <p class="note-index">03</p>
-                    <h3>前端落地</h3>
-                    <p>可独立完成静态站点、展示型页面和中小型交互界面的实现，并兼顾响应式与部署流程。</p>
-                  </article>
-                </div>
-              </section>
-
-              <section class="paper-sheet page-screen contact-sheet" id="contact" data-page="contact" hidden>
-                <div class="sheet-head">
-                  <p class="sheet-tag">Resume 04 / Contact</p>
-                  <h2>联系信息</h2>
-                </div>
-                <p class="contact-copy">
-                  如需沟通合作、岗位机会或项目交流，可通过以下方式联系我。
-                </p>
-                <div class="contact-list">
-                  <a href="https://github.com/lidongsevenlee" target="_blank" rel="noreferrer">GitHub</a>
-                  <a href="https://lidongsevenlee.github.io" target="_blank" rel="noreferrer">个人主页</a>
-                  <a href="mailto:hello@sevenlee.me">hello@sevenlee.me</a>
-                </div>
-              </section>
-            </div>
-          </section>
+    <canvas class="bg-canvas" id="bg-canvas" aria-hidden="true"></canvas>
+    <div class="app">
+      <header class="topbar">
+        <div class="brand" aria-label="个人信息">
+          <div class="brand-mark" aria-hidden="true">
+            <span class="brand-dot"></span>
+          </div>
+          <div class="brand-copy">
+            <p class="brand-name">Seven Lee</p>
+            <p class="brand-role">产品设计 / 前端体验 / 品牌表达</p>
           </div>
         </div>
+
+        <div class="topbar-actions">
+          <a class="btn btn-primary" href="./output/pdf/lidong-resume.pdf" download="lidong-resume.pdf">
+            下载 PDF 简历
+          </a>
+          <button class="btn btn-ghost theme-toggle" id="theme-toggle" type="button" aria-label="切换日夜模式">
+            <span class="theme-toggle-track" aria-hidden="true">
+              <span class="theme-toggle-thumb"></span>
+            </span>
+            <span class="theme-toggle-label">白天</span>
+          </button>
+        </div>
       </header>
+
+      <div class="shell">
+        <aside class="sidebar" aria-label="导航与状态">
+          <nav class="menu" aria-label="主导航">
+            <button class="menu-button is-active" data-page="about">
+              <span class="menu-icon" aria-hidden="true">⟡</span>
+              <span>简介</span>
+            </button>
+            <button class="menu-button" data-page="posts">
+              <span class="menu-icon" aria-hidden="true">⌁</span>
+              <span>经历</span>
+            </button>
+            <button class="menu-button" data-page="notes">
+              <span class="menu-icon" aria-hidden="true">⧉</span>
+              <span>技能</span>
+            </button>
+            <button class="menu-button" data-page="contact">
+              <span class="menu-icon" aria-hidden="true">✶</span>
+              <span>联系</span>
+            </button>
+          </nav>
+        </aside>
+
+        <main class="content" aria-label="简历内容">
+          <div class="page-stage" id="page-stage">
+            <article class="page page-screen is-current" id="about" data-page="about">
+              <header class="page-head">
+                <p class="page-kicker">Profile</p>
+                <h1>把抽象需求落成可交付体验</h1>
+                <p class="lead">
+                  聚焦产品体验、前端实现与品牌表达的复合型从业者。擅长把目标与约束梳理成清晰结构，再落成可上线、可维护、可被用户感知的界面与交互。
+                </p>
+              </header>
+
+              <section class="grid-2">
+                <article class="card">
+                  <h2>关注领域</h2>
+                  <ul class="pill-list">
+                    <li>产品设计</li>
+                    <li>前端体验</li>
+                    <li>品牌表达</li>
+                    <li>设计系统</li>
+                    <li>内容型站点</li>
+                  </ul>
+                </article>
+                <article class="card">
+                  <h2>工作方式</h2>
+                  <ul class="checklist">
+                    <li>先定义信息架构与关键流程</li>
+                    <li>建立组件层级与状态规则</li>
+                    <li>用可落地的动效表达反馈</li>
+                    <li>交付可维护的前端与规范</li>
+                  </ul>
+                </article>
+              </section>
+
+              <section class="card card-wide">
+                <h2>快速概览</h2>
+                <div class="stats">
+                  <div class="stat">
+                    <p class="stat-label">定位</p>
+                    <p class="stat-value">产品体验 / 设计工程</p>
+                  </div>
+                  <div class="stat">
+                    <p class="stat-label">协作</p>
+                    <p class="stat-value">远程与跨团队</p>
+                  </div>
+                  <div class="stat">
+                    <p class="stat-label">交付</p>
+                    <p class="stat-value">设计 + 代码 + 文档</p>
+                  </div>
+                </div>
+              </section>
+            </article>
+
+            <section class="page page-screen" id="posts" data-page="posts" hidden>
+              <header class="page-head">
+                <p class="page-kicker">Experience</p>
+                <h1>经历</h1>
+                <p class="lead">按时间线整理的岗位与职责摘要，可根据链接跳转查看相关页面。</p>
+              </header>
+              <div class="experience-list" id="experience-list"></div>
+            </section>
+
+            <section class="page page-screen" id="notes" data-page="notes" hidden>
+              <header class="page-head">
+                <p class="page-kicker">Skills</p>
+                <h1>技能</h1>
+                <p class="lead">围绕规划、设计与落地能力拆解，强调方法论与可交付性。</p>
+              </header>
+
+              <div class="grid-3">
+                <article class="card">
+                  <p class="card-index">01</p>
+                  <h2>产品规划</h2>
+                  <p>从业务目标、用户路径与页面结构梳理需求，快速形成信息架构、关键流程与里程碑。</p>
+                </article>
+                <article class="card">
+                  <p class="card-index">02</p>
+                  <h2>视觉与交互</h2>
+                  <p>建立界面节奏、组件层次与交互反馈，用一致的规则提升可用性与辨识度。</p>
+                </article>
+                <article class="card">
+                  <p class="card-index">03</p>
+                  <h2>前端落地</h2>
+                  <p>可独立完成静态站点与中小型交互界面实现，并兼顾响应式、性能与部署流程。</p>
+                </article>
+              </div>
+
+              <section class="card card-wide">
+                <h2>常用工具与栈</h2>
+                <div class="pill-columns" aria-label="工具列表">
+                  <ul class="pill-list">
+                    <li>Figma</li>
+                    <li>设计系统</li>
+                    <li>原型与动效</li>
+                  </ul>
+                  <ul class="pill-list">
+                    <li>HTML / CSS</li>
+                    <li>JavaScript</li>
+                    <li>GitHub Pages</li>
+                  </ul>
+                  <ul class="pill-list">
+                    <li>可访问性</li>
+                    <li>响应式</li>
+                    <li>性能优化</li>
+                  </ul>
+                </div>
+              </section>
+            </section>
+
+            <section class="page page-screen" id="contact" data-page="contact" hidden>
+              <header class="page-head">
+                <p class="page-kicker">Contact</p>
+                <h1>联系</h1>
+                <p class="lead">欢迎沟通合作、岗位机会或项目交流。</p>
+              </header>
+
+              <section class="grid-2">
+                <article class="card">
+                  <h2>快速入口</h2>
+                  <div class="link-list">
+                    <a href="mailto:hello@sevenlee.me">hello@sevenlee.me</a>
+                    <a href="https://github.com/lidongsevenlee" target="_blank" rel="noreferrer">GitHub</a>
+                    <a href="https://lidongsevenlee.github.io" target="_blank" rel="noreferrer">主页</a>
+                  </div>
+                </article>
+                <article class="card">
+                  <h2>偏好</h2>
+                  <ul class="checklist">
+                    <li>清晰的目标与时间预期</li>
+                    <li>以问题为中心的沟通方式</li>
+                    <li>可复用的组件与规则沉淀</li>
+                  </ul>
+                </article>
+              </section>
+
+              <section class="card card-wide">
+                <h2>备注</h2>
+                <p class="muted">
+                  你也可以直接下载 PDF 版本简历：点击右上角“下载 PDF 简历”按钮，或使用页面顶部链接。
+                </p>
+              </section>
+            </section>
+          </div>
+        </main>
+      </div>
     </div>
 
     <script src="./script.js"></script>
