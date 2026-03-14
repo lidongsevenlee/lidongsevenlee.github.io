@@ -60,12 +60,19 @@
         </aside>
 
         <main class="content" aria-label="简历内容">
+          <!-- 思考指示器：页面切换时短暂显示 -->
+          <div class="think-bar" id="think-bar" hidden aria-hidden="true">
+            <span class="think-dot"></span>
+            <span class="think-dot"></span>
+            <span class="think-dot"></span>
+          </div>
+
           <div class="page-stage" id="page-stage">
             <article class="page page-screen is-current" id="about" data-page="about">
               <header class="page-head">
                 <p class="page-kicker">Profile</p>
-                <h1>把抽象需求落成可交付体验</h1>
-                <p class="lead">
+                <h1 data-stream>把抽象需求落成可交付体验</h1>
+                <p class="lead" data-stream-delay="1">
                   聚焦产品体验、前端实现与品牌表达的复合型从业者。擅长把目标与约束梳理成清晰结构，再落成可上线、可维护、可被用户感知的界面与交互。
                 </p>
               </header>
@@ -114,8 +121,8 @@
             <section class="page page-screen" id="posts" data-page="posts" hidden>
               <header class="page-head">
                 <p class="page-kicker">Experience</p>
-                <h1>经历</h1>
-                <p class="lead">按时间线整理的岗位与职责摘要，可根据链接跳转查看相关页面。</p>
+                <h1 data-stream>经历</h1>
+                <p class="lead" data-stream-delay="1">按时间线整理的岗位与职责摘要，可根据链接跳转查看相关页面。</p>
               </header>
               <div class="experience-list" id="experience-list"></div>
             </section>
@@ -123,8 +130,8 @@
             <section class="page page-screen" id="notes" data-page="notes" hidden>
               <header class="page-head">
                 <p class="page-kicker">Skills</p>
-                <h1>技能</h1>
-                <p class="lead">围绕规划、设计与落地能力拆解，强调方法论与可交付性。</p>
+                <h1 data-stream>技能</h1>
+                <p class="lead" data-stream-delay="1">围绕规划、设计与落地能力拆解，强调方法论与可交付性。</p>
               </header>
 
               <div class="grid-3">
@@ -170,8 +177,8 @@
             <section class="page page-screen" id="contact" data-page="contact" hidden>
               <header class="page-head">
                 <p class="page-kicker">Contact</p>
-                <h1>联系</h1>
-                <p class="lead">欢迎沟通合作、岗位机会或项目交流。</p>
+                <h1 data-stream>联系</h1>
+                <p class="lead" data-stream-delay="1">欢迎沟通合作、岗位机会或项目交流。</p>
               </header>
 
               <section class="grid-2">
@@ -196,7 +203,7 @@
               <section class="card card-wide">
                 <h2>备注</h2>
                 <p class="muted">
-                  你也可以直接下载 PDF 版本简历：点击右上角“下载 PDF 简历”按钮，或使用页面顶部链接。
+                  你也可以直接下载 PDF 版本简历：点击右上角"下载 PDF 简历"按钮，或使用页面顶部链接。
                 </p>
               </section>
             </section>

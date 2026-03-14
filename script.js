@@ -33,8 +33,12 @@ const menuButtons = document.querySelectorAll(".menu-button");
 const pages = document.querySelectorAll(".page-screen");
 const themeToggle = document.querySelector("#theme-toggle");
 const themeToggleLabel = document.querySelector(".theme-toggle-label");
+const thinkBar = document.querySelector("#think-bar");
+
 let currentPage = "about";
 let onThemeChange = () => {};
+
+// ─── Experience Cards ───────────────────────────────────────────────────────
 
 if (experienceList) {
   experienceList.innerHTML = posts
@@ -55,17 +59,16 @@ if (experienceList) {
     .join("");
 }
 
+// ─── Theme ──────────────────────────────────────────────────────────────────
+
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
-
   if (themeToggleLabel) {
     themeToggleLabel.textContent = theme === "night" ? "夜间" : "白天";
   }
-
   if (themeToggle) {
     themeToggle.setAttribute("aria-pressed", theme === "night" ? "true" : "false");
   }
-
   onThemeChange();
 }
 
@@ -74,6 +77,132 @@ function updateMenu(pageId) {
     button.classList.toggle("is-active", button.dataset.page === pageId);
   });
 }
+
+// ─── Animation Helpers ──────────────────────────────────────────────────────
+
+const reducedMotion =
+  window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+// Stream text character-by-character, like Claude generating a response.
+// Caches original text in dataset so it can be replayed correctly.
+function streamIn(el, speed = 36) {
+  if (reducedMotion) return Promise.resolve();
+
+  const original = el.dataset.originalText ?? el.textContent;
+  el.dataset.originalText = original;
+
+  const chars = [...original]; // correctly splits CJK & emoji
+  el.textContent = "";
+  el.classList.add("is-streaming");
+
+  return new Promise((resolve) => {
+    let i = 0;
+    let canceled = false;
+
+    el._cancelStream = () => {
+      canceled = true;
+      el.textContent = original;
+      el.classList.remove("is-streaming");
+      el._cancelStream = null;
+      resolve();
+    };
+
+    function step() {
+      if (canceled) return;
+      if (i >= chars.length) {
+        el.classList.remove("is-streaming");
+        el._cancelStream = null;
+        resolve();
+        return;
+      }
+      el.textContent = chars.slice(0, i + 1).join("");
+      i += 1;
+      setTimeout(step, speed);
+    }
+
+    step();
+  });
+}
+
+// Cancel any in-progress streams on the page
+function cancelStreams(pageEl) {
+  pageEl.querySelectorAll(".is-streaming").forEach((el) => {
+    if (el._cancelStream) el._cancelStream();
+  });
+}
+
+// Stagger-reveal cards inside a page
+function revealCards(pageEl) {
+  if (reducedMotion) return;
+  const items = pageEl.querySelectorAll(".card, .experience-card");
+  items.forEach((item, i) => {
+    item.classList.remove("card-reveal");
+    // Force reflow so re-adding the class re-triggers the animation
+    void item.offsetWidth;
+    item.style.setProperty("--reveal-delay", `${i * 80}ms`);
+    item.classList.add("card-reveal");
+    item.addEventListener(
+      "animationend",
+      () => {
+        item.classList.remove("card-reveal");
+        item.style.removeProperty("--reveal-delay");
+      },
+      { once: true }
+    );
+  });
+}
+
+// Thinking indicator (3 pulsing dots, shown briefly during page transitions)
+function showThinking() {
+  if (!thinkBar) return;
+  thinkBar.classList.remove("is-fading");
+  thinkBar.hidden = false;
+}
+
+function hideThinking() {
+  if (!thinkBar) return;
+  thinkBar.classList.add("is-fading");
+  setTimeout(() => {
+    thinkBar.hidden = true;
+    thinkBar.classList.remove("is-fading");
+  }, 200);
+}
+
+// Orchestrate the full entry animation for a page:
+// think → stream h1 → fade lead → reveal cards
+async function animatePageEntry(pageEl, isInitial = false) {
+  const h1 = pageEl.querySelector("h1[data-stream]");
+  const lead = pageEl.querySelector(".lead[data-stream-delay]");
+
+  if (!reducedMotion && !isInitial) {
+    // Show thinking dots briefly
+    showThinking();
+    await delay(280);
+    hideThinking();
+    await delay(60);
+  }
+
+  // Stream the heading
+  if (h1) await streamIn(h1, isInitial ? 42 : 36);
+
+  // Fade in the lead paragraph
+  if (lead) {
+    lead.style.transition = reducedMotion ? "none" : "opacity 380ms ease";
+    lead.style.opacity = "0";
+    // Let browser register the opacity-0 before transitioning
+    await delay(16);
+    lead.style.opacity = "1";
+  }
+
+  // Stagger cards
+  revealCards(pageEl);
+}
+
+// ─── Routing / Animation Timing Utils ───────────────────────────────────────
 
 function parseMaxTimeMs(value) {
   return Math.max(
@@ -103,13 +232,14 @@ function afterAnimationOrTimeout(element, callback) {
   };
 
   element.addEventListener("animationend", finish, { once: true });
-
   if (totalMs === 0) {
     queueMicrotask(finish);
   } else {
     window.setTimeout(finish, totalMs + 80);
   }
 }
+
+// ─── Page Navigation ─────────────────────────────────────────────────────────
 
 function showPage(pageId, shouldUpdateHash = true) {
   const nextPage = document.getElementById(pageId);
@@ -119,6 +249,9 @@ function showPage(pageId, shouldUpdateHash = true) {
     updateMenu(pageId);
     return;
   }
+
+  // Cancel any streams in progress on the outgoing page
+  if (activePage) cancelStreams(activePage);
 
   nextPage.hidden = false;
   nextPage.classList.remove("is-exiting");
@@ -136,6 +269,8 @@ function showPage(pageId, shouldUpdateHash = true) {
 
   afterAnimationOrTimeout(nextPage, () => {
     nextPage.classList.remove("is-entering");
+    // Start content animation after page finishes sliding in
+    animatePageEntry(nextPage);
   });
 
   if (activePage) {
@@ -155,10 +290,7 @@ function showPage(pageId, shouldUpdateHash = true) {
 menuButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const pageId = button.dataset.page;
-
-    if (pageId) {
-      showPage(pageId);
-    }
+    if (pageId) showPage(pageId);
   });
 });
 
@@ -188,9 +320,10 @@ function routeFromHash() {
   }
 }
 
-window.addEventListener("popstate", () => {
-  routeFromHash();
-});
+window.addEventListener("popstate", routeFromHash);
+window.addEventListener("hashchange", routeFromHash);
+
+// ─── Init ────────────────────────────────────────────────────────────────────
 
 pages.forEach((page) => {
   if (!page.classList.contains("is-current")) {
@@ -200,12 +333,28 @@ pages.forEach((page) => {
 
 const initialPage = window.location.hash.replace("#", "") || "about";
 updateMenu(initialPage);
-if (initialPage !== "about") showPage(initialPage, false);
+
+if (initialPage !== "about") {
+  showPage(initialPage, false);
+} else {
+  // Stream the initial page on first load
+  const aboutPage = document.getElementById("about");
+  if (aboutPage) {
+    // Small delay to let page paint first
+    setTimeout(() => animatePageEntry(aboutPage, true), 200);
+  }
+}
 
 const storedTheme = localStorage.getItem("theme");
 const prefersNight =
   window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches;
-applyTheme(storedTheme === "day" || storedTheme === "night" ? storedTheme : prefersNight ? "night" : "day");
+applyTheme(
+  storedTheme === "day" || storedTheme === "night"
+    ? storedTheme
+    : prefersNight
+      ? "night"
+      : "day"
+);
 
 if (themeToggle) {
   themeToggle.addEventListener("click", () => {
@@ -216,7 +365,7 @@ if (themeToggle) {
   });
 }
 
-window.addEventListener("hashchange", routeFromHash);
+// ─── Mouse Particles ─────────────────────────────────────────────────────────
 
 function initMouseParticles() {
   const canvas = document.querySelector("#bg-canvas");
@@ -225,7 +374,7 @@ function initMouseParticles() {
   const allowParticles =
     window.matchMedia &&
     window.matchMedia("(hover: hover) and (pointer: fine)").matches &&
-    !(window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+    !reducedMotion;
   if (!allowParticles) return;
 
   const ctx = canvas.getContext("2d", { alpha: true });
@@ -242,9 +391,10 @@ function initMouseParticles() {
   const maxParticles = 760;
   const rings = [];
 
+  // Warm amber/orange palette — Claude-like
   const palette = {
-    a: { r: 90, g: 140, b: 255 },
-    b: { r: 140, g: 110, b: 255 },
+    a: { r: 210, g: 100, b: 50 },
+    b: { r: 190, g: 140, b: 60 },
   };
 
   function clamp01(value) {
@@ -269,8 +419,8 @@ function initMouseParticles() {
 
   function readPaletteFromCss() {
     const style = getComputedStyle(document.documentElement);
-    const a = parseHexColor(style.getPropertyValue("--accent"));
-    const b = parseHexColor(style.getPropertyValue("--accent-2"));
+    const a = parseHexColor(style.getPropertyValue("--accent").trim());
+    const b = parseHexColor(style.getPropertyValue("--accent-2").trim());
     if (a) palette.a = a;
     if (b) palette.b = b;
   }
@@ -287,7 +437,8 @@ function initMouseParticles() {
   }
 
   function addParticle(x, y, strength = 1, options = {}) {
-    if (particles.length >= maxParticles) particles.splice(0, particles.length - maxParticles + 1);
+    if (particles.length >= maxParticles)
+      particles.splice(0, particles.length - maxParticles + 1);
 
     const speedMin = options.speedMin ?? 0.35;
     const speedMax = options.speedMax ?? 1.65;
@@ -300,13 +451,12 @@ function initMouseParticles() {
         ? Math.atan2(direction.y, direction.x)
         : Math.random() * Math.PI * 2;
     const angle = baseAngle + (Math.random() - 0.5) * spread;
-    const hueMix = Math.random();
     const base =
       options.color === "a"
         ? palette.a
         : options.color === "b"
           ? palette.b
-          : hueMix < 0.5
+          : Math.random() < 0.5
             ? palette.a
             : palette.b;
 
@@ -316,10 +466,8 @@ function initMouseParticles() {
     const sizeMax = options.sizeMax ?? 4.6;
 
     particles.push({
-      x,
-      y,
-      prevX: x,
-      prevY: y,
+      x, y,
+      prevX: x, prevY: y,
       vx: Math.cos(angle) * speed,
       vy: Math.sin(angle) * speed,
       ttl: ttlMin + Math.random() * Math.max(0, ttlMax - ttlMin),
@@ -332,9 +480,7 @@ function initMouseParticles() {
       streakMax: options.streakMax ?? 28,
       sparkle: options.sparkle ?? 0.18,
       sparkleSeed: Math.random() * 1000,
-      r: base.r,
-      g: base.g,
-      b: base.b,
+      r: base.r, g: base.g, b: base.b,
     });
   }
 
@@ -345,14 +491,11 @@ function initMouseParticles() {
   function addRing(x, y, strength = 1) {
     const base = Math.random() < 0.5 ? palette.a : palette.b;
     rings.push({
-      x,
-      y,
+      x, y,
       life: 0,
       ttl: 520 + Math.random() * 260,
       strength,
-      r: base.r,
-      g: base.g,
-      b: base.b,
+      r: base.r, g: base.g, b: base.b,
     });
   }
 
@@ -369,13 +512,10 @@ function initMouseParticles() {
       const ring = rings[i];
       ring.life += 16.7;
       const t = clamp01(ring.life / ring.ttl);
-      const alpha = (1 - t) * 0.36;
-      const radius = (18 + t * 260) * ring.strength;
+      const alpha = (1 - t) * 0.3;
+      const radius = (18 + t * 240) * ring.strength;
 
-      if (t >= 1) {
-        rings.splice(i, 1);
-        continue;
-      }
+      if (t >= 1) { rings.splice(i, 1); continue; }
 
       ctx.lineWidth = 2;
       ctx.strokeStyle = `rgba(${ring.r}, ${ring.g}, ${ring.b}, ${alpha})`;
@@ -388,13 +528,13 @@ function initMouseParticles() {
       const p = particles[i];
       p.life += 16.7;
       const t = clamp01(p.life / p.ttl);
-      const sparkle = 1 - p.sparkle + p.sparkle * (0.6 + 0.4 * Math.sin((p.life + p.sparkleSeed) * 0.04));
-      const alpha = (1 - t) * (0.28 + pointerStrength * 0.18) * sparkle;
+      const sparkle =
+        1 - p.sparkle + p.sparkle * (0.6 + 0.4 * Math.sin((p.life + p.sparkleSeed) * 0.04));
+      const alpha = (1 - t) * (0.24 + pointerStrength * 0.16) * sparkle;
       const radius = p.size * (0.9 + t * 1.6);
 
       p.prevX = p.x;
       p.prevY = p.y;
-
       p.vx *= p.friction;
       p.vy *= p.friction;
       p.vy += p.gravity;
@@ -410,10 +550,7 @@ function initMouseParticles() {
         const dx = p.x - p.prevX;
         const dy = p.y - p.prevY;
         const step = Math.max(0.001, Math.hypot(dx, dy));
-        const tail = Math.min(
-          p.streakMax,
-          Math.max(p.streakMin, step * 10 * (1 - t) + radius * 5)
-        );
+        const tail = Math.min(p.streakMax, Math.max(p.streakMin, step * 10 * (1 - t) + radius * 5));
         const tx = p.x - (dx / step) * tail;
         const ty = p.y - (dy / step) * tail;
 
@@ -444,19 +581,14 @@ function initMouseParticles() {
   function onMove(event) {
     if (!(event instanceof PointerEvent)) return;
     if (event.pointerType && event.pointerType !== "mouse") return;
+
     const x = event.clientX;
     const y = event.clientY;
-
     const dx = x - lastPointer.x;
     const dy = y - lastPointer.y;
     const dist = Math.hypot(dx, dy);
     const speed = Math.min(40, dist);
-
-    const dir =
-      dist > 0.01
-        ? { x: dx / dist, y: dy / dist }
-        : { x: 0, y: -1 };
-
+    const dir = dist > 0.01 ? { x: dx / dist, y: dy / dist } : { x: 0, y: -1 };
     const exhaust = { x: -dir.x, y: -dir.y };
 
     lastPointer = { x, y };
@@ -506,72 +638,44 @@ function initMouseParticles() {
 
     addRing(x, y, 1);
     burst(x, y, 96, 2.9, {
-      speedMin: 1.3,
-      speedMax: 5.6,
-      ttlMin: 720,
-      ttlMax: 1650,
-      sizeMin: 1.1,
-      sizeMax: 3.2,
-      friction: 0.979,
-      gravity: 0.03,
-      streak: true,
-      streakMin: 12,
-      streakMax: 44,
-      sparkle: 0.58,
+      speedMin: 1.3, speedMax: 5.6,
+      ttlMin: 720, ttlMax: 1650,
+      sizeMin: 1.1, sizeMax: 3.2,
+      friction: 0.979, gravity: 0.03,
+      streak: true, streakMin: 12, streakMax: 44, sparkle: 0.58,
     });
 
     window.setTimeout(() => {
       addRing(x, y, 0.85);
       burst(x, y, 56, 2.2, {
-        speedMin: 0.9,
-        speedMax: 4.3,
-        ttlMin: 560,
-        ttlMax: 1320,
-        sizeMin: 1.0,
-        sizeMax: 2.6,
-        friction: 0.981,
-        gravity: 0.034,
+        speedMin: 0.9, speedMax: 4.3,
+        ttlMin: 560, ttlMax: 1320,
+        sizeMin: 1.0, sizeMax: 2.6,
+        friction: 0.981, gravity: 0.034,
         color: "b",
-        streak: true,
-        streakMin: 10,
-        streakMax: 38,
-        sparkle: 0.52,
+        streak: true, streakMin: 10, streakMax: 38, sparkle: 0.52,
       });
     }, 140);
 
     window.setTimeout(() => {
       burst(x, y, 24, 1.6, {
-        speedMin: 0.6,
-        speedMax: 2.7,
-        ttlMin: 420,
-        ttlMax: 900,
-        sizeMin: 0.9,
-        sizeMax: 2.2,
-        friction: 0.982,
-        gravity: 0.036,
+        speedMin: 0.6, speedMax: 2.7,
+        ttlMin: 420, ttlMax: 900,
+        sizeMin: 0.9, sizeMax: 2.2,
+        friction: 0.982, gravity: 0.036,
         color: "a",
-        streak: true,
-        streakMin: 8,
-        streakMax: 30,
-        sparkle: 0.44,
+        streak: true, streakMin: 8, streakMax: 30, sparkle: 0.44,
       });
     }, 260);
 
     window.setTimeout(() => {
       burst(x, y, 26, 1.2, {
-        speedMin: 0.25,
-        speedMax: 1.4,
-        ttlMin: 920,
-        ttlMax: 1900,
-        sizeMin: 0.7,
-        sizeMax: 1.7,
-        friction: 0.987,
-        gravity: 0.055,
+        speedMin: 0.25, speedMax: 1.4,
+        ttlMin: 920, ttlMax: 1900,
+        sizeMin: 0.7, sizeMax: 1.7,
+        friction: 0.987, gravity: 0.055,
         color: Math.random() < 0.5 ? "a" : "b",
-        streak: true,
-        streakMin: 6,
-        streakMax: 22,
-        sparkle: 0.22,
+        streak: true, streakMin: 6, streakMax: 22, sparkle: 0.22,
       });
     }, 520);
   }
@@ -585,9 +689,7 @@ function initMouseParticles() {
   resize();
   window.requestAnimationFrame(tick);
 
-  onThemeChange = () => {
-    readPaletteFromCss();
-  };
+  onThemeChange = () => { readPaletteFromCss(); };
 
   window.addEventListener("resize", resize, { passive: true });
   window.addEventListener("pointermove", onMove, { passive: true });
