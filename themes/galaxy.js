@@ -7,6 +7,7 @@ const ThemeGalaxy = (() => {
   let edges = [];
   let stars = [];
   let hoveredNode = null;
+  let selectedNode = null;
   let offsetX = 0, offsetY = 0;
   let targetOX = 0, targetOY = 0;
   let isDragging = false;
@@ -34,6 +35,15 @@ const ThemeGalaxy = (() => {
           </div>
           <div class="galaxy-hint">CLICK nodes to explore · DRAG to pan</div>
           <div class="galaxy-legend" id="galaxy-legend"></div>
+          <div class="galaxy-panel" id="galaxy-panel">
+            <div class="galaxy-panel-label">Constellation brief</div>
+            <h2 id="galaxy-panel-title">${PROFILE.name}</h2>
+            <p id="galaxy-panel-copy">${PROFILE.summary}</p>
+            <div class="galaxy-panel-meta" id="galaxy-panel-meta">
+              ${PROFILE.metrics.map(metric => `<span>${metric.value} · ${metric.label}</span>`).join('')}
+            </div>
+            <a class="galaxy-panel-link" id="galaxy-panel-link" href="${PROFILE.projects[0]?.link || '#'}" target="_blank" rel="noreferrer">Open featured project ↗</a>
+          </div>
         </div>
         <div id="galaxy-tooltip">
           <div class="gt-name" id="gt-name"></div>
@@ -95,7 +105,7 @@ const ThemeGalaxy = (() => {
       const y = cy + Math.sin(angle) * dist;
       nodes.push({
         id: `proj-${i}`, label: p.name,
-        desc: p.desc,
+        desc: p.highlight || p.desc,
         level: null, category: 'project',
         link: (p.link && p.link !== '#') ? p.link : null,
         x, y, r: 12,
@@ -139,6 +149,8 @@ const ThemeGalaxy = (() => {
     window.addEventListener('resize', () => { resize(); buildGraph(canvas.width/2, canvas.height/2); });
 
     buildGraph(canvas.width / 2, canvas.height / 2);
+    selectedNode = nodes.find(node => node.id === 'center') || null;
+    updatePanel(selectedNode);
 
     let t = 0;
 
@@ -198,12 +210,13 @@ const ThemeGalaxy = (() => {
         const r = n.r * pulseMod;
         const color = CATEGORY_COLORS[n.category] || '#fff';
         const isHovered = n === hoveredNode;
+        const isSelected = n === selectedNode;
 
         // Glow
-        const glowR = r * (isHovered ? 4 : 2.5);
+        const glowR = r * (isHovered ? 4 : isSelected ? 3.4 : 2.5);
         if (glowR > 0) {
           const grd = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, glowR);
-          grd.addColorStop(0, color + (isHovered ? 'aa' : '44'));
+          grd.addColorStop(0, color + (isHovered ? 'aa' : isSelected ? '77' : '44'));
           grd.addColorStop(1, 'transparent');
           ctx.beginPath();
           ctx.arc(n.x, n.y, glowR, 0, Math.PI*2);
@@ -215,17 +228,17 @@ const ThemeGalaxy = (() => {
         ctx.beginPath();
         ctx.arc(n.x, n.y, r, 0, Math.PI*2);
         ctx.fillStyle = color;
-        ctx.globalAlpha = isHovered ? 1 : .85;
+        ctx.globalAlpha = isHovered || isSelected ? 1 : .85;
         ctx.fill();
         ctx.globalAlpha = 1;
 
         // Ring on hover
-        if (isHovered) {
+        if (isHovered || isSelected) {
           ctx.beginPath();
-          ctx.arc(n.x, n.y, r + 5, 0, Math.PI*2);
+          ctx.arc(n.x, n.y, r + (isSelected ? 7 : 5), 0, Math.PI*2);
           ctx.strokeStyle = color;
-          ctx.lineWidth = 1.5;
-          ctx.globalAlpha = .5;
+          ctx.lineWidth = isSelected ? 2 : 1.5;
+          ctx.globalAlpha = isSelected ? .75 : .5;
           ctx.stroke();
           ctx.globalAlpha = 1;
         }
@@ -266,7 +279,11 @@ const ThemeGalaxy = (() => {
     canvas.addEventListener('mousedown', e => { isDragging = true; dragStart = {x:e.clientX,y:e.clientY}; canvas.style.cursor='grabbing'; });
     canvas.addEventListener('mouseup',   e => {
       const moved = dragStart && (Math.abs(e.clientX-dragStart.x) + Math.abs(e.clientY-dragStart.y)) < 5;
-      if (moved && hoveredNode?.link) window.open(hoveredNode.link, '_blank');
+      if (moved && hoveredNode) {
+        selectedNode = hoveredNode;
+        updatePanel(selectedNode);
+        if (hoveredNode.link) window.open(hoveredNode.link, '_blank');
+      }
       isDragging = false; canvas.style.cursor = hoveredNode ? 'pointer' : 'grab';
     });
     canvas.addEventListener('mouseleave',() => { isDragging = false; hoveredNode = null; hideTooltip(); });
@@ -291,10 +308,51 @@ const ThemeGalaxy = (() => {
     document.getElementById('galaxy-tooltip')?.classList.remove('show');
   }
 
+  function updatePanel(node) {
+    const title = document.getElementById('galaxy-panel-title');
+    const copy = document.getElementById('galaxy-panel-copy');
+    const meta = document.getElementById('galaxy-panel-meta');
+    const link = document.getElementById('galaxy-panel-link');
+    if (!title || !copy || !meta || !link) return;
+
+    if (!node || node.id === 'center') {
+      title.textContent = PROFILE.name;
+      copy.textContent = PROFILE.summary;
+      meta.innerHTML = PROFILE.metrics.map(metric => `<span>${metric.value} · ${metric.label}</span>`).join('');
+      const featured = PROFILE.projects.find(project => project.featured && project.link && project.link !== '#') || PROFILE.projects.find(project => project.link && project.link !== '#');
+      if (featured) {
+        link.href = featured.link;
+        link.style.display = 'inline-flex';
+        link.textContent = `Open ${featured.name} ↗`;
+      } else {
+        link.style.display = 'none';
+      }
+      return;
+    }
+
+    title.textContent = node.label;
+    copy.textContent = node.desc || '';
+    meta.innerHTML = [
+      node.level ? `<span>${node.level}% proficiency</span>` : '',
+      node.year ? `<span>${node.year}</span>` : '',
+      node.tags?.length ? `<span>${node.tags.join(' · ')}</span>` : ''
+    ].filter(Boolean).join('');
+
+    if (node.link) {
+      link.href = node.link;
+      link.style.display = 'inline-flex';
+      link.textContent = `Open ${node.label} ↗`;
+    } else {
+      link.style.display = 'none';
+    }
+  }
+
   function destroy() {
     if (animId) cancelAnimationFrame(animId);
     animId = null;
     nodes = []; edges = []; stars = [];
+    hoveredNode = null;
+    selectedNode = null;
   }
 
   return { render, destroy };

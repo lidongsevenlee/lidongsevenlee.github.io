@@ -4,17 +4,26 @@
 const ThemeTerminal = (() => {
   let history = [];
   let histIdx = -1;
+  const mail = PROFILE.social.find(item => item.icon === 'email');
+  const github = PROFILE.social.find(item => item.icon === 'github');
+
+  function promptPrefix() {
+    return `<span class="user">${PROFILE.alias}</span><span class="at">@</span><span class="host">portfolio</span><span class="term-prompt-sep">:</span><span class="path">~</span><span class="dollar">$ </span>`;
+  }
 
   const COMMANDS = {
     help: () => [
       { cls: 'green bold', text: '  Available commands:' },
-      { cls: 'cyan',  text: '  whoami       — 关于我' },
-      { cls: 'cyan',  text: '  skills       — 技能树' },
-      { cls: 'cyan',  text: '  ls projects  — 项目列表' },
-      { cls: 'cyan',  text: '  timeline     — 成长历程' },
-      { cls: 'cyan',  text: '  contact      — 联系方式' },
-      { cls: 'cyan',  text: '  clear        — 清屏' },
-      { cls: 'dim',   text: '  tip: 按 ↑↓ 翻历史记录' },
+      { cls: 'cyan',  text: '  whoami         — 关于我' },
+      { cls: 'cyan',  text: '  status         — 当前状态 / 关注方向' },
+      { cls: 'cyan',  text: '  skills         — 技能树' },
+      { cls: 'cyan',  text: '  ls projects    — 项目列表' },
+      { cls: 'cyan',  text: '  timeline       — 成长历程' },
+      { cls: 'cyan',  text: '  contact        — 联系方式' },
+      { cls: 'cyan',  text: '  open github    — 打开 GitHub' },
+      { cls: 'cyan',  text: '  open email     — 发邮件' },
+      { cls: 'cyan',  text: '  clear          — 清屏' },
+      { cls: 'dim',   text: '  tip: 按 ↑↓ 翻历史记录，按 Tab 自动补全' },
     ],
 
     whoami: () => {
@@ -27,9 +36,21 @@ const ThemeTerminal = (() => {
         { cls: 'yellow', text: `  from    : ${PROFILE.location}` },
         { cls: 'dim', text: `` },
         { cls: 'output', text: `  ${PROFILE.bio}` },
+        { cls: 'dim', text: `` },
+        { cls: 'output', text: `  focus   : ${PROFILE.focus}` },
       ];
       return lines;
     },
+
+    status: () => [
+      { cls: 'green bold', text: '  [ STATUS ]' },
+      { cls: 'output', text: `  ${PROFILE.status}` },
+      { cls: 'dim', text: '' },
+      ...PROFILE.metrics.map(metric => ({
+        cls: 'output',
+        html: `&nbsp;&nbsp;<span class="term-tag term-tag-accent">${metric.value}</span> ${metric.label}`
+      }))
+    ],
 
     skills: () => {
       const lines = [{ cls: 'green bold', text: '  [ SKILL TREE ]' }];
@@ -43,7 +64,7 @@ const ThemeTerminal = (() => {
             cls: 'output',
             html: `<span class="term-bar-wrap">
               <span class="term-bar-label">&nbsp;&nbsp;${s.name}</span>
-              <span style="color:#00ff41;letter-spacing:1px">${bar}</span>
+              <span class="term-meter">${bar}</span>
               <span class="term-bar-pct">${s.level}%</span>
             </span>`
           });
@@ -59,14 +80,17 @@ const ThemeTerminal = (() => {
         lines.push({
           cls: 'white bold',
           html: hasLink
-            ? `\n&nbsp;&nbsp;<span style="color:#555">${String(i+1).padStart(2,'0')}.</span> <a href="${p.link}" target="_blank" style="color:#fff;text-decoration:none" onmouseover="this.style.color='#00ff41'" onmouseout="this.style.color='#fff'">${p.name}</a>  <span style="color:#555">[${p.year}]</span> <span style="color:#7c6af7;font-size:11px">↗</span>`
-            : `\n&nbsp;&nbsp;<span style="color:#555">${String(i+1).padStart(2,'0')}.</span> ${p.name}  <span style="color:#555">[${p.year}]</span>`
+            ? `\n&nbsp;&nbsp;<span class="term-index">${String(i+1).padStart(2,'0')}.</span> <a href="${p.link}" target="_blank" rel="noreferrer" class="term-link">${p.name}</a> <span class="term-inline-year">[${p.year}]</span> <span class="term-inline-link">↗</span>`
+            : `\n&nbsp;&nbsp;<span class="term-index">${String(i+1).padStart(2,'0')}.</span> ${p.name} <span class="term-inline-year">[${p.year}]</span>`
         });
         lines.push({ cls: 'output', text: `      ${p.desc}` });
         lines.push({
           cls: 'output',
-          html: `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${p.tags.map(t => `<span class="term-tag" style="color:#7ec8e3;border-color:#7ec8e3">${t}</span>`).join(' ')}`
+          html: `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;${p.tags.map(t => `<span class="term-tag term-tag-info">${t}</span>`).join(' ')}`
         });
+        if (p.highlight) {
+          lines.push({ cls: 'dim', text: `      note: ${p.highlight}` });
+        }
       });
       return lines;
     },
@@ -74,7 +98,7 @@ const ThemeTerminal = (() => {
     timeline: () => {
       const lines = [{ cls: 'green bold', text: '  [ TIMELINE ]' }];
       PROFILE.timeline.forEach(t => {
-        lines.push({ cls: 'output', html: `&nbsp;&nbsp;<span style="color:#ffbd2e;font-weight:bold">${t.year}</span> &nbsp;── &nbsp;${t.event}` });
+        lines.push({ cls: 'output', html: `&nbsp;&nbsp;<span class="term-timeline-year">${t.year}</span> &nbsp;── &nbsp;${t.event}` });
       });
       return lines;
     },
@@ -83,9 +107,19 @@ const ThemeTerminal = (() => {
       { cls: 'green bold', text: '  [ CONTACT ]' },
       ...PROFILE.social.map(s => ({
         cls: 'output',
-        html: `&nbsp;&nbsp;<span class="term-tag" style="color:#a3e4a0;border-color:#a3e4a0">${s.name}</span> &nbsp;<a href="${s.url}" style="color:#7ec8e3;text-decoration:none">${s.url}</a>`
+        html: `&nbsp;&nbsp;<span class="term-tag term-tag-accent">${s.name}</span> &nbsp;<a href="${s.url}" target="_blank" rel="noreferrer" class="term-link">${s.display || s.url.replace('mailto:', '')}</a>`
       }))
     ],
+
+    'open github': () => {
+      if (github?.url) window.open(github.url, '_blank', 'noopener');
+      return [{ cls: 'output', text: `  opening ${github?.display || github?.url || 'GitHub'} ...` }];
+    },
+
+    'open email': () => {
+      if (mail?.url) window.open(mail.url, '_blank', 'noopener');
+      return [{ cls: 'output', text: `  opening ${mail?.display || mail?.url || 'email'} ...` }];
+    },
 
     clear: () => 'CLEAR',
   };
@@ -111,10 +145,10 @@ const ThemeTerminal = (() => {
           <span class="terminal-title-bar">${PROFILE.alias} — bash</span>
         </div>
         <div class="terminal-body" id="term-body"></div>
-        <div class="term-help-hint">type <span style="color:#00ff41">help</span> for available commands</div>
+        <div class="term-help-hint">type <span class="term-inline-command">help</span> for commands, <span class="term-inline-command">status</span> for the quick overview</div>
         <div class="terminal-input-row">
           <span class="term-input-prompt">
-            <span class="user">${PROFILE.alias}</span><span class="at">@</span><span class="host">github</span><span style="color:#555">:</span><span class="path">~</span><span class="dollar">$ </span>
+            ${promptPrefix()}
           </span>
           <input type="text" id="term-input" autocomplete="off" spellcheck="false" autofocus />
         </div>
@@ -128,12 +162,12 @@ const ThemeTerminal = (() => {
     const body = document.getElementById('term-body');
     const welcome = [
       { cls: 'green', text: `  +--------------------------------------------------+` },
-      { cls: 'green', html: `  |  <span style="color:#fff;font-weight:bold">${PROFILE.name}</span>  //  <span style="color:#7ec8e3">${PROFILE.alias}</span>` },
-      { cls: 'green', html: `  |  <span style="color:#ffbd2e">${PROFILE.title}</span>  ·  <span style="color:#555">${PROFILE.location}</span>` },
+      { cls: 'green', html: `  |  <span class="term-white-strong">${PROFILE.name}</span>  //  <span class="term-cyan">${PROFILE.alias}</span>` },
+      { cls: 'green', html: `  |  <span class="term-warm">${PROFILE.title}</span>  ·  <span class="term-soft">${PROFILE.location}</span>` },
       { cls: 'green', text: `  +--------------------------------------------------+` },
       { cls: 'dim',  text: `` },
-      { cls: 'dim',  text: `` },
-      { cls: 'output', html: `&nbsp;&nbsp;Type <span style="color:#00ff41">help</span> to get started.` },
+      { cls: 'output', html: `&nbsp;&nbsp;Type <span class="term-inline-command">help</span> to get started or jump straight to <span class="term-inline-command">ls projects</span>.` },
+      { cls: 'output', html: `&nbsp;&nbsp;Quick actions: <span class="term-tag term-tag-info">status</span><span class="term-tag term-tag-info">contact</span><span class="term-tag term-tag-info">open github</span>` },
       { cls: 'dim',  text: '' },
     ];
     welcome.forEach(l => appendLine(body, l));
@@ -155,7 +189,7 @@ const ThemeTerminal = (() => {
   function appendPrompt(body, cmd) {
     const el = document.createElement('div');
     el.className = 'term-line term-prompt';
-    el.innerHTML = `<span class="user">${PROFILE.alias}</span><span class="at">@</span><span class="host">github</span><span style="color:#555">:</span><span class="path">~</span><span class="dollar">$ </span><span style="color:#fff">${cmd}</span>`;
+    el.innerHTML = `${promptPrefix()}<span class="term-command">${cmd}</span>`;
     body.appendChild(el);
     body.scrollTop = body.scrollHeight;
   }

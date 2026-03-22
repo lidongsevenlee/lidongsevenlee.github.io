@@ -4,6 +4,7 @@
 const ThemeMinimal = (() => {
   let animId = null;
   let particles = [];
+  const socialIcon = { github: '🐙', twitter: '🐦', email: '📧' };
 
   function render() {
     document.body.className = 'theme-minimal';
@@ -14,12 +15,20 @@ const ThemeMinimal = (() => {
           <div class="minimal-eyebrow">${PROFILE.location} · Frontend Developer</div>
           <div class="minimal-name">${PROFILE.name.split(' ')[0]}<br>${PROFILE.name.split(' ').slice(1).join(' ') || ''}</div>
           <div class="minimal-role"><span class="hl">${PROFILE.title}</span> · ${PROFILE.subtitle.split('·').slice(1).join('·')}</div>
+          <div class="minimal-metrics">
+            ${PROFILE.metrics.map(metric => `
+              <div class="minimal-metric">
+                <strong>${metric.value}</strong>
+                <span>${metric.label}</span>
+              </div>`).join('')}
+          </div>
           <nav class="minimal-nav">
             <button class="minimal-nav-btn" data-panel="work">Work</button>
             <button class="minimal-nav-btn" data-panel="skills">Skills</button>
             <button class="minimal-nav-btn" data-panel="about">About</button>
             <button class="minimal-nav-btn" data-panel="contact">Contact</button>
           </nav>
+          <p class="minimal-footer-note">${PROFILE.status}</p>
         </div>
 
         <!-- Panels -->
@@ -27,10 +36,11 @@ const ThemeMinimal = (() => {
           <button class="mp-close">×</button>
           <div class="mp-inner">
             <div class="mp-title">Work</div>
+            <p class="mp-panel-intro">我更喜欢把项目理解成“体验假设 + 结构选择 + 交付细节”的组合，而不只是把页面拼完。</p>
             <div class="mp-grid-2">
               ${PROFILE.projects.map(p => `
-                <div class="mp-card" ${p.link && p.link !== '#' ? `data-link="${p.link}" style="cursor:pointer"` : ''}>
-                  <h3>${p.name} <span style="font-size:11px;color:rgba(255,255,255,.2)">${p.year}</span>${p.link && p.link !== '#' ? `<span style="float:right;font-size:11px;color:rgba(255,255,255,.3)">↗</span>` : ''}</h3>
+                <div class="mp-card" ${p.link && p.link !== '#' ? `data-link="${p.link}"` : ''}>
+                  <h3>${p.name} <span class="project-year">${p.year}</span>${p.link && p.link !== '#' ? `<span class="project-link">↗</span>` : ''}</h3>
                   <p>${p.desc}</p>
                   <div class="mp-tags">${p.tags.map(t=>`<span class="mp-tag">${t}</span>`).join('')}</div>
                 </div>`).join('')}
@@ -42,14 +52,15 @@ const ThemeMinimal = (() => {
           <button class="mp-close">×</button>
           <div class="mp-inner">
             <div class="mp-title">Skills</div>
+            <p class="mp-panel-intro">以下不是“会不会”，而是我最常用、最愿意继续打磨的前端工作语言。</p>
             <div class="mp-skill-list">
               ${PROFILE.skills.map(s => `
                 <div class="mp-skill-item">
                   <div class="mp-skill-name">${s.name}</div>
                   <div class="mp-skill-bar">
-                    <div class="mp-skill-fill" style="width:0%" data-level="${s.level}%"></div>
+                    <div class="mp-skill-fill" data-level="${s.level}%"></div>
                   </div>
-                  <div style="font-size:12px;color:rgba(255,255,255,.2);width:32px;text-align:right">${s.level}</div>
+                  <div class="mp-skill-level">${s.level}</div>
                 </div>`).join('')}
             </div>
           </div>
@@ -59,13 +70,13 @@ const ThemeMinimal = (() => {
           <button class="mp-close">×</button>
           <div class="mp-inner">
             <div class="mp-title">About</div>
-            <div style="max-width:520px">
-              <p style="font-size:18px;color:rgba(255,255,255,.65);line-height:1.8;margin-bottom:32px">${PROFILE.bio}</p>
-              <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="mp-about-copy">
+              <p>${PROFILE.bio}</p>
+              <div class="mp-timeline">
                 ${PROFILE.timeline.map(t => `
-                  <div style="display:flex;gap:24px;font-size:14px">
-                    <span style="color:rgba(255,255,255,.2);font-weight:600;width:40px;flex-shrink:0">${t.year}</span>
-                    <span style="color:rgba(255,255,255,.5)">${t.event}</span>
+                  <div class="mp-timeline-item">
+                    <span class="mp-timeline-year">${t.year}</span>
+                    <span class="mp-timeline-text">${t.event}</span>
                   </div>`).join('')}
               </div>
             </div>
@@ -76,13 +87,13 @@ const ThemeMinimal = (() => {
           <button class="mp-close">×</button>
           <div class="mp-inner">
             <div class="mp-title">Contact</div>
-            <div style="display:flex;flex-direction:column;gap:16px;max-width:400px">
+            <p class="mp-panel-intro">${PROFILE.focus}</p>
+            <div class="mp-contact-list">
               ${PROFILE.social.map(s => `
-                <a href="${s.url}" target="_blank" style="display:flex;align-items:center;gap:16px;color:rgba(255,255,255,.5);text-decoration:none;font-size:16px;transition:color .2s"
-                   onmouseover="this.style.color='#fff'" onmouseout="this.style.color='rgba(255,255,255,.5)'">
-                  <span style="font-size:22px">${{github:'🐙',twitter:'🐦',email:'📧'}[s.icon]||'🔗'}</span>
+                <a href="${s.url}" target="_blank" class="mp-contact-link">
+                  <span class="mp-contact-icon">${socialIcon[s.icon]||'🔗'}</span>
                   <span>${s.name}</span>
-                  <span style="margin-left:auto;font-size:12px;opacity:.4">${s.url}</span>
+                  <span class="mp-contact-copy">${s.display || s.url.replace('mailto:', '')}</span>
                 </a>`).join('')}
             </div>
           </div>
@@ -145,7 +156,7 @@ const ThemeMinimal = (() => {
     window.addEventListener('resize', resize);
 
     // Create particles
-    particles = Array.from({ length: 80 }, () => ({
+    particles = Array.from({ length: 96 }, () => ({
       x: Math.random() * canvas.width,
       y: Math.random() * canvas.height,
       vx: (Math.random() - .5) * .3,

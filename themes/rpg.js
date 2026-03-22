@@ -35,11 +35,12 @@ const ThemeRpg = (() => {
           <div class="rpg-class-badge">⚔ ${rpg.class}</div>
           <div class="rpg-name">${PROFILE.name}</div>
           <div class="rpg-level">LV.${rpg.level} — ${PROFILE.title}</div>
+          <p class="rpg-header-copy">${PROFILE.summary}</p>
         </div>
 
         <div class="rpg-layout">
           <!-- Left column -->
-          <div style="display:flex;flex-direction:column;gap:20px">
+          <div class="rpg-stack">
 
             <!-- Vitals -->
             <div class="rpg-card">
@@ -62,7 +63,7 @@ const ThemeRpg = (() => {
               </div>
 
               <!-- Stats -->
-              <div class="rpg-card-title" style="margin-top:16px">◈ Attributes</div>
+              <div class="rpg-card-title with-gap">◈ Attributes</div>
               <div class="rpg-stats">
                 ${Object.entries(rpg.stats).map(([name, val]) => `
                   <div class="stat-row">
@@ -82,13 +83,18 @@ const ThemeRpg = (() => {
                     <div class="ach-icon">🏅</div>
                     <div class="ach-name">${a.name}</div>
                     <div class="ach-desc">${a.desc}</div>
-                  </div>`).join('')}
+                </div>`).join('')}
               </div>
+            </div>
+
+            <div class="rpg-card">
+              <div class="rpg-card-title">🧭 Current Quest</div>
+              <p class="rpg-quest-copy">${PROFILE.focus}</p>
             </div>
           </div>
 
           <!-- Right column -->
-          <div style="display:flex;flex-direction:column;gap:20px">
+          <div class="rpg-stack">
 
             <!-- Equipment / Skills -->
             <div class="rpg-card">
@@ -98,7 +104,7 @@ const ThemeRpg = (() => {
                   <div class="equip-item">
                     <div class="equip-rarity" style="background:${rarityColor(s.level)}"></div>
                     <span class="equip-name">${s.name}</span>
-                    <span style="font-size:11px;color:rgba(255,200,50,.4);margin-right:8px">${s.category}</span>
+                    <span class="equip-category">${s.category}</span>
                     <div class="equip-bar">
                       <div class="equip-fill" style="width:${s.level}%;background:${rarityColor(s.level)};opacity:.8"></div>
                     </div>
@@ -111,14 +117,14 @@ const ThemeRpg = (() => {
               <div class="rpg-card-title">📜 Quest Log (Projects)</div>
               <div>
                 ${PROFILE.projects.map(p => `
-                  <div class="quest-item" ${p.link && p.link !== '#' ? `data-link="${p.link}" style="cursor:pointer"` : ''}>
+                  <div class="quest-item" ${p.link && p.link !== '#' ? `data-link="${p.link}"` : ''}>
                     <div class="quest-status">✅</div>
                     <div class="quest-info">
-                      <h3>${p.name}${p.link && p.link !== '#' ? ` <span style="color:rgba(255,200,50,.5);font-size:11px">↗</span>` : ''}</h3>
+                      <h3>${p.name}${p.link && p.link !== '#' ? ` <span class="quest-link">↗</span>` : ''}</h3>
                       <p>${p.desc}</p>
                       <div class="quest-tags">${p.tags.map(t=>`<span class="quest-tag">${t}</span>`).join('')}</div>
                     </div>
-                    <div style="font-size:11px;color:rgba(255,200,50,.3);flex-shrink:0;align-self:flex-start;padding-top:2px">${p.year}</div>
+                    <div class="quest-year">${p.year}</div>
                   </div>`).join('')}
               </div>
             </div>

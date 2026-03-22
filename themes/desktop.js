@@ -4,6 +4,7 @@
 const ThemeDesktop = (() => {
   let zCounter = 10;
   let dragState = null;
+  const socialIcon = { github: '🐙', twitter: '🐦', email: '📧' };
 
   const WINDOWS = {
     about: {
@@ -11,12 +12,12 @@ const ThemeDesktop = (() => {
       w: 480, h: 320,
       content: () => `
         <div class="win-about">
-          <img src="${PROFILE.avatar}" class="win-avatar" onerror="this.style.display='none'">
+          <img src="${PROFILE.avatar}" class="win-avatar">
           <div class="win-about-text">
             <h2>${PROFILE.name}</h2>
             <div class="role">${PROFILE.title}</div>
             <p>${PROFILE.bio}</p>
-            <p style="margin-top:10px;color:rgba(255,255,255,.4);font-size:12px">📍 ${PROFILE.location}</p>
+            <p class="win-about-meta">📍 ${PROFILE.location}</p>
           </div>
         </div>`
     },
@@ -24,7 +25,7 @@ const ThemeDesktop = (() => {
       title: 'Skills.txt', icon: '⚡',
       w: 420, h: 380,
       content: () => `
-        <div style="margin-bottom:8px;font-size:12px;color:rgba(255,255,255,.3);letter-spacing:.05em">PROFICIENCY</div>
+        <div class="win-pane-label">PROFICIENCY</div>
         ${PROFILE.skills.map(s => `
           <div class="skill-row">
             <span class="skill-name">${s.name}</span>
@@ -38,8 +39,8 @@ const ThemeDesktop = (() => {
       title: 'Projects/', icon: '📁',
       w: 500, h: 420,
       content: () => PROFILE.projects.map(p => `
-        <div class="proj-card" ${p.link && p.link !== '#' ? `data-link="${p.link}" style="cursor:pointer"` : ''}>
-          <h3>${p.name} <span style="font-size:11px;color:rgba(255,255,255,.25);font-weight:400">${p.year}</span>${p.link && p.link !== '#' ? ` <span style="font-size:11px;color:#7c6af7;float:right">↗ 查看</span>` : ''}</h3>
+        <div class="proj-card" ${p.link && p.link !== '#' ? `data-link="${p.link}"` : ''}>
+          <h3>${p.name} <span class="proj-inline-year">${p.year}</span>${p.link && p.link !== '#' ? ` <span class="proj-inline-link">↗ 查看</span>` : ''}</h3>
           <p>${p.desc}</p>
           <div class="proj-tags">${p.tags.map(t => `<span class="proj-tag">${t}</span>`).join('')}</div>
         </div>`).join('')
@@ -48,7 +49,7 @@ const ThemeDesktop = (() => {
       title: 'Timeline', icon: '📅',
       w: 420, h: 360,
       content: () => `
-        <div style="margin-bottom:4px;font-size:12px;color:rgba(255,255,255,.3)">JOURNEY</div>
+        <div class="win-pane-label">JOURNEY</div>
         ${PROFILE.timeline.map(t => `
           <div class="tl-item">
             <span class="tl-year">${t.year}</span>
@@ -61,9 +62,9 @@ const ThemeDesktop = (() => {
       w: 360, h: 260,
       content: () => PROFILE.social.map(s => `
         <a href="${s.url}" class="contact-link" target="_blank">
-          <span class="c-icon">${{github:'🐙',twitter:'🐦',email:'📧'}[s.icon]||'🔗'}</span>
+          <span class="c-icon">${socialIcon[s.icon]||'🔗'}</span>
           <span>${s.name}</span>
-          <span style="margin-left:auto;font-size:12px;color:rgba(255,255,255,.25)">${s.url}</span>
+          <span class="contact-link-copy">${s.display || s.url.replace('mailto:', '')}</span>
         </a>`).join('')
     },
   };
@@ -73,6 +74,16 @@ const ThemeDesktop = (() => {
     document.getElementById('app').innerHTML = `
       <div class="desktop-bg" id="desktop">
         <div class="desktop-icons" id="desktop-icons"></div>
+        <div class="desktop-widget">
+          <div class="desktop-widget-label">Today on desktop</div>
+          <h2>${PROFILE.name}</h2>
+          <p>${PROFILE.summary}</p>
+          <div class="desktop-widget-tags">
+            <span class="desktop-widget-tag">${PROFILE.location}</span>
+            <span class="desktop-widget-tag">${PROFILE.title}</span>
+            <span class="desktop-widget-tag">Open for collaboration</span>
+          </div>
+        </div>
         <div class="desktop-dock" id="dock"></div>
       </div>`;
 
@@ -115,6 +126,10 @@ const ThemeDesktop = (() => {
       item.querySelector('.dock-btn').addEventListener('click', () => openWindow(id));
       dock.appendChild(item);
     });
+    const meta = document.createElement('div');
+    meta.className = 'dock-meta';
+    meta.innerHTML = `<span>${new Date().getFullYear()}</span><span>${PROFILE.location}</span>`;
+    dock.appendChild(meta);
   }
 
   function iconBg(id) {
@@ -165,6 +180,9 @@ const ThemeDesktop = (() => {
     win.addEventListener('mousedown', () => bringToFront(win));
     desktop.appendChild(win);
     bringToFront(win);
+    win.querySelector('.win-avatar')?.addEventListener('error', e => {
+      e.currentTarget.style.display = 'none';
+    });
 
     // link delegation for project cards
     win.querySelector('.window-body').addEventListener('click', e => {
