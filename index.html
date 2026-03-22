@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>lidongsevenlee — Frontend Developer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     THEME SWITCHER  (always on top)
+════════════════════════════════════════════ -->
+<div id="theme-switcher">
+  <button id="switcher-toggle" title="切换主题">
+    <span class="switcher-icon">◈</span>
+  </button>
+  <div id="switcher-panel">
+    <div class="switcher-title">选择风格</div>
+    <div class="theme-options">
+      <button class="theme-btn active" data-theme="terminal">
+        <span class="t-icon">⌨</span>
+        <span class="t-label">Terminal</span>
+      </button>
+      <button class="theme-btn" data-theme="desktop">
+        <span class="t-icon">🖥</span>
+        <span class="t-label">Desktop</span>
+      </button>
+      <button class="theme-btn" data-theme="story">
+        <span class="t-icon">📖</span>
+        <span class="t-label">Story</span>
+      </button>
+      <button class="theme-btn" data-theme="minimal">
+        <span class="t-icon">◼</span>
+        <span class="t-label">Minimal</span>
+      </button>
+      <button class="theme-btn" data-theme="rpg">
+        <span class="t-icon">⚔</span>
+        <span class="t-label">RPG</span>
+      </button>
+      <button class="theme-btn" data-theme="galaxy">
+        <span class="t-icon">✦</span>
+        <span class="t-label">Galaxy</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     MAIN CONTENT CONTAINER
+════════════════════════════════════════════ -->
+<div id="app"></div>
+
+<script src="data.js"></script>
+<script src="themes/terminal.js"></script>
+<script src="themes/desktop.js"></script>
+<script src="themes/story.js"></script>
+<script src="themes/minimal.js"></script>
+<script src="themes/rpg.js"></script>
+<script src="themes/galaxy.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
