@@ -3,7 +3,7 @@
   right: 24px;
   bottom: 24px;
   z-index: 9999;
-  display: flex;
+  display: none;
   flex-direction: column;
   align-items: flex-end;
   gap: 12px;
