@@ -78,6 +78,6 @@
     if (e.key === 'Escape') closePanel();
   });
 
-  // Start with minimal theme
-  switchTheme(localStorage.getItem(STORAGE_KEY) || 'minimal');
+  // Start with terminal theme
+  switchTheme(localStorage.getItem(STORAGE_KEY) || 'terminal');
 })();
