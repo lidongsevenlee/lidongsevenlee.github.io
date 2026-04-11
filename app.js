@@ -2,7 +2,6 @@
 //  APP CONTROLLER — Theme switcher logic
 // ═══════════════════════════════════════════
 (function () {
-  const STORAGE_KEY = 'portfolio-theme';
   const THEMES = {
     terminal: ThemeTerminal,
     desktop:  ThemeDesktop,
@@ -33,7 +32,6 @@
       // Render new theme
       THEMES[name].render();
       currentTheme = name;
-      localStorage.setItem(STORAGE_KEY, name);
 
       // Update active button
       document.querySelectorAll('.theme-btn').forEach(b => {
@@ -78,6 +76,6 @@
     if (e.key === 'Escape') closePanel();
   });
 
-  // Start with minimal theme
-  switchTheme(localStorage.getItem(STORAGE_KEY) || 'minimal');
+  // Start with terminal theme
+  switchTheme('terminal');
 })();
