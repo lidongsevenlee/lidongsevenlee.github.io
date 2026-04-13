@@ -76,6 +76,6 @@
     if (e.key === 'Escape') closePanel();
   });
 
-  // Start with terminal theme
-  switchTheme('terminal');
+  // Start with story theme
+  switchTheme('story');
 })();
