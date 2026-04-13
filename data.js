@@ -51,7 +51,7 @@ const PROFILE = {
       name: "Algorithm Roadmap",
       desc: "一个把算法学习路径做成可视化地图的工具，帮助用户理解知识结构、安排节奏，并减少“知道很多概念但不知道先学什么”的迷茫感。",
       tags: ["React", "Canvas", "Vite"],
-      link: "https://lidongsevenlee.github.io/algo-roadmap/",
+      link: "/algo-roadmap/",
       year: 2026,
       highlight: "从信息架构和视觉层级出发，把抽象学习路线变成更容易坚持的交互体验。",
       featured: true,
