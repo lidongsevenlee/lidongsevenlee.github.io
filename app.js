@@ -9,6 +9,7 @@
     minimal:  ThemeMinimal,
     rpg:      ThemeRpg,
     galaxy:   ThemeGalaxy,
+    bento:    ThemeBento,
   };
 
   let currentTheme = null;
@@ -76,6 +77,6 @@
     if (e.key === 'Escape') closePanel();
   });
 
-  // Start with story theme
-  switchTheme('story');
+  // Start with bento theme
+  switchTheme('bento');
 })();
