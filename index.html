@@ -1,71 +1,28 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>lidongsevenlee — Frontend Developer</title>
-  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
-  <link rel="stylesheet" href="styles/base.css" />
-  <link rel="stylesheet" href="styles/switcher.css" />
-  <link rel="stylesheet" href="styles/themes.css" />
-</head>
-<body>
-
-<!-- ═══════════════════════════════════════════
-     THEME SWITCHER  (always on top)
-════════════════════════════════════════════ -->
-<div id="theme-switcher">
-  <button id="switcher-toggle" title="切换主题">
-    <span class="switcher-icon">◈</span>
-  </button>
-  <div id="switcher-panel">
-    <div class="switcher-title">选择风格</div>
-    <div class="theme-options">
-      <button class="theme-btn" data-theme="terminal">
-        <span class="t-icon">⌨</span>
-        <span class="t-label">Terminal</span>
-      </button>
-      <button class="theme-btn" data-theme="desktop">
-        <span class="t-icon">🖥</span>
-        <span class="t-label">Desktop</span>
-      </button>
-      <button class="theme-btn" data-theme="story">
-        <span class="t-icon">📖</span>
-        <span class="t-label">Story</span>
-      </button>
-      <button class="theme-btn" data-theme="minimal">
-        <span class="t-icon">◼</span>
-        <span class="t-label">Minimal</span>
-      </button>
-      <button class="theme-btn" data-theme="rpg">
-        <span class="t-icon">⚔</span>
-        <span class="t-label">RPG</span>
-      </button>
-      <button class="theme-btn" data-theme="galaxy">
-        <span class="t-icon">✦</span>
-        <span class="t-label">Galaxy</span>
-      </button>
-      <button class="theme-btn active" data-theme="bento">
-        <span class="t-icon">⊞</span>
-        <span class="t-label">Bento</span>
-      </button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════
-     MAIN CONTENT CONTAINER
-════════════════════════════════════════════ -->
-<div id="app"></div>
-
-<script src="data.js"></script>
-<script src="themes/terminal.js"></script>
-<script src="themes/desktop.js"></script>
-<script src="themes/story.js"></script>
-<script src="themes/minimal.js"></script>
-<script src="themes/rpg.js"></script>
-<script src="themes/galaxy.js"></script>
-<script src="themes/bento.js"></script>
-<script src="app.js"></script>
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>lidongsevenlee — Frontend Developer</title>
+    <meta name="description" content="李东的个人主页：Frontend Developer，专注于 UI 系统、交互设计与创意前端实现。" />
+    <link rel="icon" href="/src/favicon.svg" type="image/svg+xml" />
+    <!-- preconnect speeds up Google Fonts — avoids blocking @import -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" media="print" onload="this.media='all'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" /></noscript>
+    <!-- inline theme init: set data-theme before paint to avoid flash -->
+    <script>
+      (function(){
+        var saved = localStorage.getItem('theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var theme = saved || (prefersDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
+    <script type="module" src="/src/main.tsx"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
 </html>
