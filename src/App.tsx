@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import BlurReveal from "./BlurReveal";
 import { SpotifyCard } from "./SpotifyCard";
 import { LabelInput } from "./LabelInput";
-import AnimatedGradient, { PRESETS } from "./AnimatedGradient";
 import { Signature } from "./Signature";
 
 /* ── Theme hook ── */
@@ -190,48 +189,32 @@ export default function App() {
         </div>
       </BlurReveal>
 
-      {projects.map((p, i) => (
-        <BlurReveal key={p.name} delay={i * 0.1} duration={0.55}>
-          <div className="project-row" style={{ alignItems: "center" }}>
-            {/* index — hidden on mobile, shown inside card instead */}
-            <div className="project-index project-index-desktop">{String(i + 1).padStart(2, "0")}</div>
-            {/* AnimatedGradient card */}
-            <a
-              href={p.href}
-              target={p.href.startsWith("http") ? "_blank" : undefined}
-              rel="noreferrer"
-              className="project-gradient-card"
-            >
-              <AnimatedGradient config={{ preset: PRESETS[i % PRESETS.length] }} radius="12px" />
-              {/* dark overlay for contrast */}
-              <div style={{ position: "absolute", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 0, borderRadius: 12 }} />
-              <div style={{ position: "relative", zIndex: 1, display: "flex", alignItems: "center", justifyContent: "space-between", height: "100%", width: "100%" }}>
-                {/* left: index (mobile) + label + name */}
-                <div style={{ display: "flex", flexDirection: "column", gap: 2, minWidth: 0 }}>
-                  <div className="project-index-mobile">{String(i + 1).padStart(2, "0")}</div>
-                  <div className="project-label" style={{ color: "rgba(255,255,255,0.6)" }}>{p.label}</div>
-                  <div className="project-name" style={{ color: "#fff" }}>{p.name}</div>
-                </div>
-                {/* right: tags */}
-                <div className="project-tags" style={{ flexShrink: 0, display: "flex", flexDirection: "row", alignItems: "center", gap: 4, marginLeft: "auto" }}>
-                  {p.tags.map((t) => <span key={t} className="tag" style={{ borderColor: "rgba(255,255,255,0.25)", color: "rgba(255,255,255,0.75)" }}>{t}</span>)}
-                </div>
-              </div>
-            </a>
-            {/* Open button — desktop only */}
-            <div className="project-open project-open-desktop" style={{ flex: 1, display: "flex", justifyContent: "center", alignItems: "center" }}>
-              <a
-                href={p.href}
-                target={p.href.startsWith("http") ? "_blank" : undefined}
-                rel="noreferrer"
-                className="open-link"
-              >
-                Open <ArrowUpRight size={10} />
-              </a>
-            </div>
+  {projects.map((p, i) => (
+    <BlurReveal key={p.name} delay={i * 0.1} duration={0.55}>
+      <div className="project-row">
+        <div className="project-index project-index-desktop">{String(i + 1).padStart(2, "0")}</div>
+        <div className="project-body">
+          <div className="project-index-mobile">{String(i + 1).padStart(2, "0")}</div>
+          <div className="project-label">{p.label}</div>
+          <div className="project-name">{p.name}</div>
+          <p className="project-desc">{p.desc}</p>
+          <div className="project-tags">
+            {p.tags.map((t) => <span key={t} className="tag">{t}</span>)}
           </div>
-        </BlurReveal>
-      ))}
+        </div>
+        <div className="project-open project-open-desktop">
+          <a
+            href={p.href}
+            target={p.href.startsWith("http") ? "_blank" : undefined}
+            rel="noreferrer"
+            className="open-link"
+          >
+            Open <ArrowUpRight size={10} />
+          </a>
+        </div>
+      </div>
+    </BlurReveal>
+  ))}
 
       {/* OUTPUT line */}
       <div className="section-row">
@@ -324,9 +307,13 @@ export default function App() {
           </BlurReveal>
           <BlurReveal delay={0.33} duration={0.5}>
             <div style={{ marginTop: 20 }}>
-              <button className="btn btn-filled" style={{ width: "100%", justifyContent: "center" }}>
+              <a
+                href="mailto:sevenmicelid@gmail.com?subject=合作咨询"
+                className="btn btn-filled"
+                style={{ width: "100%", justifyContent: "center", display: "inline-flex" }}
+              >
                 发起合作沟通 <ArrowUpRight size={11} />
-              </button>
+              </a>
             </div>
           </BlurReveal>
         </div>

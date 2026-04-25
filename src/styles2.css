@@ -572,41 +572,33 @@ a { color: inherit; text-decoration: none; }
   color: var(--ink, #3a6b78);
 }
 
-/* ── Project gradient card ── */
-.project-gradient-card {
-  position: relative;
-  flex: 1;
-  border-radius: 12px;
-  overflow: hidden;
-  padding: 10px 16px;
-  margin-left: 20px;
-  display: flex;
-  align-items: center;
-  height: 80px;
-  text-decoration: none;
-  cursor: pointer;
-  box-sizing: border-box;
+/* ── Project body (simple style) ── */
+.project-body {
+  padding: 24px 32px;
+  border-right: 1px dashed var(--border);
 }
 
-/* index number inside card — hidden on desktop */
 .project-index-mobile {
   display: none;
   font-size: 9px;
   letter-spacing: .1em;
-  opacity: .5;
-  color: #fff;
-  margin-bottom: 8px;
+  opacity: .4;
+  margin-bottom: 6px;
 }
 
-/* ── Mobile: card fills row, index moves inside ── */
+.project-desc {
+  font-size: 10px;
+  line-height: 1.7;
+  opacity: .65;
+  margin-bottom: 12px;
+  max-width: 480px;
+}
+
+/* ── Mobile: project body ── */
 @media (max-width: 640px) {
   .project-row { grid-template-columns: 1fr !important; }
   .project-index-desktop { display: none !important; }
   .project-open-desktop { display: none !important; }
-  .project-gradient-card {
-    width: calc(100% - 32px) !important; /* match spotify-card left/right padding */
-    margin-left: 16px !important;
-    margin-right: 16px !important;
-  }
   .project-index-mobile { display: block; }
+  .project-body { padding: 20px 16px; border-right: none; }
 }
